@@ -34,5 +34,7 @@ Which should be look something like: “C:\Program Files (x86)\GNU Tools ARM Emb
 The project template can be found at this repository.
 https://github.com/mblythe86/stm32f3-discovery-basic-template.git
 
-Make sure that makefile is for unix only, 
+Make sure that makefile in the above template is for unix only, 
 so you need to modify it for windows.
+
+This repository has makefile for windows.

@@ -1,5 +1,4 @@
 #include "stm32f30x.h"
-#include "stm32f3_discovery.h"
 
 /* Private variables ---------------------------------------------------------*/
 RCC_ClocksTypeDef RCC_Clocks;
@@ -14,7 +13,21 @@ uint32_t sysTickFlag = 0;
   */
 void SysTick_Handler(void)
 {
-  sysTickFlag = 1;
+	sysTickFlag = 1;
+}
+
+void init(void)
+{
+	GPIO_InitTypeDef	GPIO_InitStructure;
+
+	//Provide clock to GPIO
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOE, ENABLE);
+	//Initialize GPIO
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_All;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;  // Output
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; // Push Pull
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOE, &GPIO_InitStructure);
 }
 
 /**
@@ -24,49 +37,21 @@ void SysTick_Handler(void)
   */
 int main(void)
 {  
-  uint32_t ledStatus = 0;
   /* SysTick end of count event each 100ms */
   RCC_GetClocksFreq(&RCC_Clocks);
   SysTick_Config(RCC_Clocks.HCLK_Frequency / 10);
   
   /* Initialize LEDs and User Button available on STM32F3-Discovery board */
-  STM_EVAL_LEDInit(LED3);
-  STM_EVAL_LEDInit(LED4);
-  STM_EVAL_LEDInit(LED5);
-  STM_EVAL_LEDInit(LED6);
-  STM_EVAL_LEDInit(LED7);
-  STM_EVAL_LEDInit(LED8);
-  STM_EVAL_LEDInit(LED9);
-  STM_EVAL_LEDInit(LED10);
-   
+  
+  init();
+
+
   /* Infinite loop */
   while (1)
   { 
 	if(sysTickFlag == 1){
 		sysTickFlag = 0;
-		if(ledStatus == 1) {
-			/* LEDs Off */
-			STM_EVAL_LEDOff(LED3);
-			STM_EVAL_LEDOff(LED6);
-			STM_EVAL_LEDOff(LED7);
-			STM_EVAL_LEDOff(LED4);
-			STM_EVAL_LEDOff(LED10);
-			STM_EVAL_LEDOff(LED8);
-			STM_EVAL_LEDOff(LED9);
-			STM_EVAL_LEDOff(LED5);
-			ledStatus = 0;
-		}else{
-			/* LEDs Off */
-			STM_EVAL_LEDOn(LED3);
-			STM_EVAL_LEDOn(LED6);
-			STM_EVAL_LEDOn(LED7);
-			STM_EVAL_LEDOn(LED4);
-			STM_EVAL_LEDOn(LED10);
-			STM_EVAL_LEDOn(LED8);
-			STM_EVAL_LEDOn(LED9);
-			STM_EVAL_LEDOn(LED5);
-			ledStatus = 1;
-		}
+		GPIOE->ODR ^= 0xFFFF;
 	}
   }
 }

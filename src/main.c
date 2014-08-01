@@ -45,13 +45,12 @@ int main(void)
   
   init();
 
-
   /* Infinite loop */
   while (1)
   { 
 	if(sysTickFlag == 1){
 		sysTickFlag = 0;
-		GPIOE->ODR ^= 0xFFFF;
+		GPIO_Write(GPIOE, (GPIO_ReadOutputData(GPIOE)^0xFFFF));
 	}
   }
 }
